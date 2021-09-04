@@ -1,0 +1,44 @@
+<html>
+<head>
+<link rel="stylesheet" href="test.css">
+<script type = "text/javascript">
+         function WebSocketTest() {
+            
+            if ("WebSocket" in window) {
+               // Let us open a web socket
+			   var url = "ws://" + location.hostname + ":7674/vatsys/vscs";
+               var ws = new WebSocket(url);
+				
+               ws.onopen = function() {
+                  
+                  // Web Socket is connected, send data using send()
+                  document.getElementById("state").innerHTML = "Connected";
+               };
+				
+               ws.onmessage = function (evt) { 
+                  var received_msg = evt.data;
+				  document.getElementById("msg").innerHTML = received_msg;
+               };
+				
+               ws.onclose = function() { 
+                  
+                  // websocket is closed.
+                  document.getElementById("state").innerHTML = "Disconnected";
+               };
+            } else {
+              
+               // The browser doesn't support WebSocket
+               alert("WebSockets NOT supported by your Browser!");
+            }
+         }
+      </script>
+	</head>
+<body>
+VSCS Page
+<div id = "sse">
+         <a href = "javascript:WebSocketTest()">Run WebSocket</a>
+      </div>
+	  <div id="state">Disconnected</div>
+	  <div id="msg"></div>
+</body>
+</html>
