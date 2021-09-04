@@ -1,44 +1,142 @@
-<html>
+<!doctype html>
+
+<html lang="en">
 <head>
-<link rel="stylesheet" href="test.css">
-<script type = "text/javascript">
-         function WebSocketTest() {
-            
-            if ("WebSocket" in window) {
-               // Let us open a web socket
-			   var url = "ws://" + location.hostname + ":7674/vatsys/vscs";
-               var ws = new WebSocket(url);
-				
-               ws.onopen = function() {
-                  
-                  // Web Socket is connected, send data using send()
-                  document.getElementById("state").innerHTML = "Connected";
-               };
-				
-               ws.onmessage = function (evt) { 
-                  var received_msg = evt.data;
-				  document.getElementById("msg").innerHTML = received_msg;
-               };
-				
-               ws.onclose = function() { 
-                  
-                  // websocket is closed.
-                  document.getElementById("state").innerHTML = "Disconnected";
-               };
-            } else {
-              
-               // The browser doesn't support WebSocket
-               alert("WebSockets NOT supported by your Browser!");
-            }
-         }
-      </script>
-	</head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>VSCS | vatSys</title>
+  <meta name="description" content="A simple HTML5 Template for new projects.">
+  <meta name="author" content="SitePoint">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+  <link rel="manifest" href="favicons/site.webmanifest">
+  <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#5bbad5">
+
+  <link rel="stylesheet" href="css/style.css?v=1.0">
+
+</head>
+
 <body>
-VSCS Page
-<div id = "sse">
-         <a href = "javascript:WebSocketTest()">Run WebSocket</a>
-      </div>
-	  <div id="state">Disconnected</div>
-	  <div id="msg"></div>
+  <div class="box">
+    <table>
+      <tr>
+        <td>
+
+         <button class="vscs-btn freq-active" id="web-socket-test">
+            <p>Run Web Socket</p>
+          </button>
+          <br />
+
+
+          <button class="vscs-btn freq-active">
+            <p>124.0</p>
+            <p>Snowy</p>
+          </button>
+
+          <br />
+
+          <button class="vscs-btn freq-primary">
+            <p>128.9</p>
+            <p>Bindook</p>
+          </button>
+
+          <br />
+
+          <button class="vscs-btn">
+            <p>125.3</p>
+            <p>Tailem Bend</p>
+          </button>
+
+        </td>
+        <td>
+
+          <button class="vscs-btn">
+            <p>124.0</p>
+            <p>Snowy</p>
+          </button>
+
+          <br />
+
+          <button class="vscs-btn">
+            <p>128.9</p>
+            <p>Bindook</p>
+          </button> 
+
+        </td>
+        <td>
+
+          <button class="vscs-btn">
+            <p>Setup</p>
+          </button>
+
+          <br />
+
+          <button class="vscs-btn">
+            <p>Coord</p>
+          </button>
+
+          <br />
+
+          <button class="vscs-btn">
+            <p>Text</p>
+          </button>
+
+          <br />
+
+          <button class="vscs-btn">
+            <p>Group</p>
+          </button>
+
+        </td>
+        <td>
+
+          <div id="state">Disconnected</div>
+          <div id="msg"></div>
+
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <script src="js/jquery-3.6.0.min.js"></script>
+
+  <script type = "text/javascript">
+    function WebSocketTest() {
+       
+       if ("WebSocket" in window) {
+          // Let us open a web socket
+    var url = "ws://" + location.hostname + ":7674/vatsys/vscs";
+          var ws = new WebSocket(url);
+   
+          ws.onopen = function() {
+             
+             // Web Socket is connected, send data using send()
+             document.getElementById("state").innerHTML = "Connected";
+          };
+   
+          ws.onmessage = function (evt) { 
+             var received_msg = evt.data;
+     document.getElementById("msg").innerHTML = received_msg;
+          };
+   
+          ws.onclose = function() { 
+             
+             // websocket is closed.
+             document.getElementById("state").innerHTML = "Disconnected";
+          };
+       } else {
+         
+          // The browser doesn't support WebSocket
+          alert("WebSockets NOT supported by your Browser!");
+       }
+    }
+
+    $("#web-socket-test").click(function() {
+       WebSocketTest();
+    })
+ </script>
 </body>
 </html>

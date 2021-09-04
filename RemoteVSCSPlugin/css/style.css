@@ -1,0 +1,77 @@
+@font-face {
+    font-family: Terminus;
+    src: url(../fonts/Terminus-Bold.ttf);
+  }
+
+body {
+    background-color: #8c9697;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Terminus;
+}
+.box {
+    max-height: 500px;
+}
+tr {
+    min-height: 250px;
+    vertical-align: top;
+}
+#freqs {
+    padding-left: 5px;
+    width: 100px;
+    height: 100%;
+}
+
+#menus {
+    padding-left: 5px;
+    width: 105px;
+    height: 100%;
+}
+
+.vscs-btn {
+    display: inline-block;
+    font-family: Terminus;
+    font-size: 16px;
+    background-color: #a0a0a0;
+    box-shadow: inset 0 1px 0 0 hsl(0deg 0% 100% / 40%);
+    margin-top: 5px;
+    text-align: center;
+    height: 100px;
+    width: 100px;
+}
+.vscs-btn:active {
+    border-width: 2px;
+    border-style: solid;
+    border-top-color: black;
+    border-top-width:2px;
+    border-left-color: black;
+    border-left-width:2px;
+    border-bottom-color: grey;
+    border-bottom-width:2px;
+    border-right-color: grey;
+    border-right-width:2px;
+    box-shadow: inset 0px 0px 5px #c1c1c1;
+    outline: none;
+}
+
+.freq-primary {
+    background-color: #01eb00;
+}
+
+.freq-active {
+    background-color: #fff;
+}
+
+.coord-hotline {
+    background-color: #ebeb00;
+}
+
+.coord-coldline {
+    background-color: #00ebeb;
+}
+
+.coord-active {
+    background-color: #5b447a;
+}
+
