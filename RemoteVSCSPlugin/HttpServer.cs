@@ -12,7 +12,7 @@ namespace RemoteVSCSPlugin
 {
     public class HttpServer
     {
-        private static string[] HTTP_PERMITTED_EXTENSIONS = new string[] { ".html", ".htm", ".txt", ".ico", ".css", ".js" };
+        private static string[] HTTP_PERMITTED_EXTENSIONS = new string[] { ".html", ".htm", ".txt", ".ico", ".css", ".js", ".ttf", ".json", ".webmanifest", ".png", ".svg", ".jpg", ".jpeg", ".gif" };
         private static string[] HTTP_HEADER_SEPARATOR = new string[1] { "\r\n" };
         private static char[] HTTP_GET_SEPARATOR = new char[1] { ' ' };
 
@@ -106,6 +106,10 @@ namespace RemoteVSCSPlugin
                 if(path.StartsWith("/"))
                     path = path.Substring(1);
 
+                int wild = path.IndexOf("?");
+                if (wild >= 0)
+                    path = path.Substring(0, wild);
+
                 string ex = Path.GetExtension(path)?.ToLower();
 
                 if (!string.IsNullOrEmpty(ex) && HTTP_PERMITTED_EXTENSIONS.Contains(ex) && File.Exists(path))
@@ -125,36 +129,75 @@ namespace RemoteVSCSPlugin
 
         private byte[] BuildResponseFromFile(string path, string extension)
         {
-            string file = File.ReadAllText(path);
+            
 
-            string contentType = "text/plain";
+            string contentType = "text";
+            string subType = "plain";
             switch(extension)
             {
                 case ".htm":
                 case ".html":
-                    contentType = "text/html";
+                    subType = "html";
                     break;
                 case ".css":
-                    contentType = "text/css";
+                    subType = "css";
                     break;
                 case ".js":
-                    contentType = "text/javascript";
+                    subType = "javascript";
+                    break;
+                case ".svg":
+                    contentType = "image";
+                    subType = "svg+xml";
+                    break;
+                case ".png":
+                    contentType = "image";
+                    subType = "png";
+                    break;
+                case ".gif":
+                    contentType = "image";
+                    subType = "gif";
+                    break;
+                case ".jpeg":
+                case ".jpg":
+                    contentType = "image";
+                    subType = "jpeg";
                     break;
                 case ".ico":
-                    contentType = "image/x-icon";
+                    contentType = "image";
+                    subType = "x-icon";
+                    break;
+                case ".ttf":
+                    contentType = "font";
+                    subType = "ttf";
                     break;
             }
 
             StringBuilder response = new StringBuilder();
             response.Append("HTTP/1.0 200 OK" + Environment.NewLine);
             response.Append("Connection: close" + Environment.NewLine);
-            response.Append($"Content-Type: {contentType}" + Environment.NewLine);
-            response.Append("Content-Length: " + file.Length + Environment.NewLine);
-            response.Append(Environment.NewLine);
-            response.Append(file);
-            response.Append(Environment.NewLine);
+            response.Append($"Content-Type: {contentType}/{subType}" + Environment.NewLine);
 
-            return Encoding.ASCII.GetBytes(response.ToString());
+            switch (contentType)
+            {
+                case "text":
+                    string file = File.ReadAllText(path);
+                    response.Append("Content-Length: " + file.Length + Environment.NewLine);
+                    response.Append(Environment.NewLine);
+                    response.Append(file);
+                    response.Append(Environment.NewLine);
+                    return Encoding.ASCII.GetBytes(response.ToString());
+                default:
+                    var bytes = File.ReadAllBytes(path);
+                    response.Append("Content-Length: " + bytes.Length + Environment.NewLine);
+                    response.Append(Environment.NewLine);
+                    var buffer = Encoding.ASCII.GetBytes(response.ToString());
+                    List<byte> join = new List<byte>();
+                    join.AddRange(buffer);
+                    join.AddRange(bytes);
+                    join.Add((byte)'\r');
+                    join.Add((byte)'\n');
+                    return join.ToArray();
+            }      
         }
     }
 }
