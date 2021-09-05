@@ -100,7 +100,7 @@ namespace RemoteVSCSPlugin
 
                 string ex = Path.GetExtension(path)?.ToLower();
 
-                if (!string.IsNullOrEmpty(ex) && HTTP_PERMITTED_EXTENSIONS.Contains(ex) && File.Exists(path))
+                if (!string.IsNullOrEmpty(ex) && HTTP_PERMITTED_EXTENSIONS.Contains(ex) && File.Exists(RemoteVSCSPlugin.Folder + path))
                 {
                     var buf = BuildResponseFromFile(path, ex);
                     await stream.WriteAsync(buf, 0, buf.Length);
@@ -115,7 +115,7 @@ namespace RemoteVSCSPlugin
             client.Close();
         }
 
-        private byte[] BuildResponseFromFile(string path, string extension)
+        private byte[] BuildResponseFromFile(string fileName, string extension)
         {
             string contentType = "text";
             string subType = "plain";
@@ -166,14 +166,14 @@ namespace RemoteVSCSPlugin
             switch (contentType)
             {
                 case "text":
-                    string file = File.ReadAllText(path);
+                    string file = File.ReadAllText(RemoteVSCSPlugin.Folder + fileName);
                     response.Append("Content-Length: " + file.Length + Environment.NewLine);
                     response.Append(Environment.NewLine);
                     response.Append(file);
                     response.Append(Environment.NewLine);
                     return Encoding.ASCII.GetBytes(response.ToString());
                 default:
-                    var bytes = File.ReadAllBytes(path);
+                    var bytes = File.ReadAllBytes(RemoteVSCSPlugin.Folder + fileName);
                     response.Append("Content-Length: " + bytes.Length + Environment.NewLine);
                     response.Append(Environment.NewLine);
                     var buffer = Encoding.ASCII.GetBytes(response.ToString());

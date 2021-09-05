@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.ComponentModel.Composition;
 using vatsys;
 using vatsys.Plugin;
+using System.IO;
+using System.Reflection;
 
 namespace RemoteVSCSPlugin
 {
@@ -27,8 +29,12 @@ namespace RemoteVSCSPlugin
 
         public string Name => nameof(RemoteVSCSPlugin);
 
+        public static string Folder;
+
         public RemoteVSCSPlugin()
         {
+            Folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\";
+
             Audio.VSCSFrequenciesChanged += Audio_ChangedEvent;
             Audio.VSCSLinesChanged += Audio_ChangedEvent;
             Audio.FrequencyErrorStateChanged += Audio_ChangedEvent;
