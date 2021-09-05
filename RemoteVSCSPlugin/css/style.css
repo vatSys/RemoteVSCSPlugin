@@ -11,11 +11,26 @@ body {
     font-family: Terminus;
 }
 .box {
-    max-height: 500px;
+    width: 100%;
 }
+
+.status {
+    display: inline-block;
+    margin-top: 5px;
+    margin-right: 0;
+    vertical-align: top;
+}
+
+table {
+    display: inline;
+}
+
 tr {
     min-height: 250px;
     vertical-align: top;
+}
+td {
+    min-width: 100px;
 }
 #freqs {
     padding-left: 5px;
@@ -55,12 +70,32 @@ tr {
     outline: none;
 }
 
-.freq-primary {
+.solid-active {
+    border-width: 2px;
+    border-style: solid;
+    border-top-color: black;
+    border-top-width:2px;
+    border-left-color: black;
+    border-left-width:2px;
+    border-bottom-color: grey;
+    border-bottom-width:2px;
+    border-right-color: grey;
+    border-right-width:2px;
+    box-shadow: inset 0px 0px 5px #c1c1c1;
+    outline: none;
+}
+
+.freq-primary-transmit {
     background-color: #01eb00;
 }
 
-.freq-active {
+
+.freq-receiving {
     background-color: #fff;
+}
+
+.freq-receive {
+    background-color: #ffcbda;
 }
 
 .coord-hotline {

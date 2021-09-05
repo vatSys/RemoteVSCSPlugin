@@ -12,10 +12,9 @@
   <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
-  <link rel="manifest" href="favicons/site.webmanifest">
   <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#5bbad5">
 
-  <link rel="stylesheet" href="css/style.css?v=1.0">
+  <link rel="stylesheet" href="css/style2.css">
 
 </head>
 
@@ -24,47 +23,7 @@
     <table>
       <tr>
         <td>
-
-         <button class="vscs-btn freq-active" id="web-socket-test">
-            <p>Run Web Socket</p>
-          </button>
-          <br />
-
-
-          <button class="vscs-btn freq-active">
-            <p>124.0</p>
-            <p>Snowy</p>
-          </button>
-
-          <br />
-
-          <button class="vscs-btn freq-primary">
-            <p>128.9</p>
-            <p>Bindook</p>
-          </button>
-
-          <br />
-
-          <button class="vscs-btn">
-            <p>125.3</p>
-            <p>Tailem Bend</p>
-          </button>
-
-        </td>
-        <td>
-
-          <button class="vscs-btn">
-            <p>124.0</p>
-            <p>Snowy</p>
-          </button>
-
-          <br />
-
-          <button class="vscs-btn">
-            <p>128.9</p>
-            <p>Bindook</p>
-          </button> 
-
+          <div id="freqs"></div>
         </td>
         <td>
 
@@ -86,57 +45,104 @@
 
           <br />
 
-          <button class="vscs-btn">
+          <button id="group_button" class="vscs-btn">
             <p>Group</p>
           </button>
 
         </td>
         <td>
 
-          <div id="state">Disconnected</div>
-          <div id="msg"></div>
+
 
         </td>
       </tr>
     </table>
+
+    <span class="status">
+      <div id="state">Disconnected</div>
+      <div id="msg"></div>
+    </span>
+
   </div>
 
   <script src="js/jquery-3.6.0.min.js"></script>
 
   <script type = "text/javascript">
-    function WebSocketTest() {
+    function Listen() {
        
-       if ("WebSocket" in window) {
+      if ("WebSocket" in window) {
           // Let us open a web socket
-    var url = "ws://" + location.hostname + ":7674/vatsys/vscs";
-          var ws = new WebSocket(url);
-   
-          ws.onopen = function() {
-             
-             // Web Socket is connected, send data using send()
-             document.getElementById("state").innerHTML = "Connected";
-          };
-   
-          ws.onmessage = function (evt) { 
-             var received_msg = evt.data;
-     document.getElementById("msg").innerHTML = received_msg;
-          };
-   
-          ws.onclose = function() { 
-             
-             // websocket is closed.
-             document.getElementById("state").innerHTML = "Disconnected";
-          };
-       } else {
-         
-          // The browser doesn't support WebSocket
-          alert("WebSockets NOT supported by your Browser!");
-       }
+      var url = "ws://" + location.hostname + ":7674/vatsys/vscs";
+        var ws = new WebSocket(url);
+  
+        ws.onopen = function() {
+          // Web Socket is connected, send data using send()
+          document.getElementById("state").innerHTML = "Connected";
+        };
+  
+        ws.onmessage = function (evt) { 
+          
+            var vatSysData = JSON.parse(evt.data);
+            //document.getElementById("msg").innerHTML = vatSysData;
+
+
+            // Empty the current freqs.
+            document.getElementById("freqs").innerHTML = "";  
+
+            if (vatSysData.Frequencies.length === 0){
+                // Do Nothing
+            } else {
+  
+                vatSysData.Frequencies.forEach(item => {
+
+                    var msg = item.FriendlyName.substr(0, 8) + "*";;
+
+                    if(item.Receiving == true) {
+                        var styleClass = 'vscs-btn freq-receiving'
+                    }
+                    else if(item.Primary || item.Transmit) {
+                        var styleClass = 'vscs-btn freq-primary-transmit'
+                        if(vatSysData.Transmitting){
+                        var msg = '++PTT++  '
+                        }
+                    }
+                    else if(item.Receive == true) {
+                        var styleClass = 'vscs-btn freq-receive'
+                    }
+                    else {
+                        var styleClass = 'vscs-btn'
+                    }
+
+                    var html = '<button class="' + styleClass + '"><p>' + item.Hertz / 1000000 + '</p><p>' + msg + '</p></button>'
+                    document.getElementById("freqs").innerHTML += html;
+
+                });
+            }
+
+            if(vatSysData.Group == true) {
+                var styleClass = 'vscs-btn solid-active'
+                document.getElementById("group_button").className = styleClass;
+            } else {
+                var styleClass = 'vscs-btn'
+                document.getElementById("group_button").className = styleClass;
+            }
+
+        };
+  
+        ws.onclose = function() { 
+            // websocket is closed.
+            document.getElementById("state").innerHTML = "Disconnected";
+        };
+      } else {
+        
+        // The browser doesn't support WebSocket
+        alert("WebSockets NOT supported by your Browser!");
+      }
     }
 
-    $("#web-socket-test").click(function() {
-       WebSocketTest();
-    })
+    $( document ).ready(function() {
+      Listen();
+    });
  </script>
 </body>
 </html>
