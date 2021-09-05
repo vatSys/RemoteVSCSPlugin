@@ -16,7 +16,6 @@ namespace RemoteVSCSPlugin
         private static string[] HTTP_HEADER_SEPARATOR = new string[1] { "\r\n" };
         private static char[] HTTP_GET_SEPARATOR = new char[1] { ' ' };
 
-        private string vscsHTML;
         private byte[] vscsHttpResponse;
         private byte[] NotFoundHttpResponse;
 
@@ -35,20 +34,9 @@ namespace RemoteVSCSPlugin
 
         private void LoadHttpResponses()
         {
-            vscsHTML = File.ReadAllText("vscs.html");
+            vscsHttpResponse = BuildResponseFromFile("vscs.html", ".html");
 
-            StringBuilder response = new StringBuilder();
-            response.Append("HTTP/1.0 200 OK" + Environment.NewLine);
-            response.Append("Connection: close" + Environment.NewLine);
-            response.Append("Content-Type: text/html" + Environment.NewLine);
-            response.Append("Content-Length: " + vscsHTML.Length + Environment.NewLine);
-            response.Append(Environment.NewLine);
-            response.Append(vscsHTML);
-            response.Append(Environment.NewLine);
-
-            vscsHttpResponse = Encoding.ASCII.GetBytes(response.ToString());
-
-            response = new StringBuilder();
+            var response = new StringBuilder();
             response.Append("HTTP/1.0 404 Not Found" + Environment.NewLine);
             response.Append("Connection: close" + Environment.NewLine);
             response.Append(Environment.NewLine);
@@ -129,8 +117,6 @@ namespace RemoteVSCSPlugin
 
         private byte[] BuildResponseFromFile(string path, string extension)
         {
-            
-
             string contentType = "text";
             string subType = "plain";
             switch(extension)
