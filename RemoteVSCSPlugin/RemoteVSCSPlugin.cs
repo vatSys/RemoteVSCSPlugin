@@ -25,11 +25,10 @@ namespace RemoteVSCSPlugin
         private VatSysWebSocketServer vatSysWebSocketServer;
 
         private VSCSState currentState;
-        internal static string CurrentStateJSON { get; private set; }
 
         public string Name => nameof(RemoteVSCSPlugin);
 
-        public static string Folder;
+        public string Folder;
 
         public RemoteVSCSPlugin()
         {
@@ -43,8 +42,9 @@ namespace RemoteVSCSPlugin
             UpdateState();
 
             cancellationToken = new CancellationTokenSource();
-            httpServer = new HttpServer(PORT, cancellationToken.Token);
+            httpServer = new HttpServer(Folder, PORT, cancellationToken.Token);
             vatSysWebSocketServer = new VatSysWebSocketServer(PORT + 1, cancellationToken.Token);
+            vatSysWebSocketServer.VSCSCommandReceived += VatSysWebSocketServer_VSCSCommandReceived;
         }
 
         ~RemoteVSCSPlugin()
@@ -70,9 +70,8 @@ namespace RemoteVSCSPlugin
                 Frequencies = ConvertFrequencies(Audio.VSCSFrequencies)
             };
             currentState = state;
-            CurrentStateJSON = currentState.Serialize();
 
-            vatSysWebSocketServer?.BroadcastToVSCS(CurrentStateJSON);
+            vatSysWebSocketServer?.BroadcastToVSCS(currentState.Serialize());
         }
 
         private List<Line> ConvertLines(IList<VSCSLine> vscsLines)
@@ -105,6 +104,18 @@ namespace RemoteVSCSPlugin
             }
             return freqs;
         }
+
+        private void VatSysWebSocketServer_VSCSCommandReceived(object sender, VSCSCommandReceivedEventArgs e)
+        {
+            switch(e.VSCSCommand.Name)
+            {
+                case "Group":
+                    Audio.GroupFrequencies = (bool)e.VSCSCommand.Value;
+                    break;
+            }
+            UpdateState();
+        }
+
 
         #region INTERFACE_FUNCTIONS
         public CustomLabelItem GetCustomLabelItem(string itemType, Track track, FDP2.FDR flightDataRecord, RDP.RadarTrack radarTrack)

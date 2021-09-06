@@ -17,6 +17,9 @@ namespace RemoteVSCSPlugin
         private CancellationToken cancellationToken;
         private Task websocketServerTask;
         private WebSocketServer webSocket;
+        private string currentStateJson;
+
+        public event EventHandler<VSCSCommandReceivedEventArgs> VSCSCommandReceived;
 
         public VatSysWebSocketServer(int port, CancellationToken token)
         {
@@ -27,21 +30,35 @@ namespace RemoteVSCSPlugin
 
         private void StartWebSocketServer()
         {
-            websocketServerTask = new Task(() => WebSocketServer(), cancellationToken, TaskCreationOptions.LongRunning);
+            webSocket = new WebSocketServer(listenPort);
+            cancellationToken.Register(() => webSocket.Stop());
+            webSocket.AddWebSocketService<VSCSWebSocketService>(VSCSWebSocketService.Path, a => 
+            {
+                a.VSCSCommandReceived += OnVSCSCommandReceived;
+                a.OpenedSession += OnOpenedSession;
+            });
+
+            websocketServerTask = new Task(() => webSocket.Start(), cancellationToken, TaskCreationOptions.LongRunning);
             websocketServerTask.Start();
         }
 
-        private void WebSocketServer()
+        private void OnOpenedSession(object sender, EventArgs e)
         {
-            webSocket = new WebSocketServer(listenPort);
-            cancellationToken.Register(() => webSocket.Stop());
-            webSocket.AddWebSocketService<VSCSWebSocketService>(VSCSWebSocketService.Path);
-            webSocket.Start();
+            BroadcastToVSCS(currentStateJson);
+        }
+
+        private void OnVSCSCommandReceived(object sender, VSCSCommandReceivedEventArgs e)
+        {
+            VSCSCommandReceived?.Invoke(this, e);
         }
 
         public void BroadcastToVSCS(string message)
         {
-            webSocket.WebSocketServices[VSCSWebSocketService.Path].Sessions.BroadcastAsync(message, null);
+            if (!string.IsNullOrEmpty(message))
+            {
+                currentStateJson = message;
+                webSocket.WebSocketServices[VSCSWebSocketService.Path].Sessions.BroadcastAsync(message, null);
+            }
         }
     }
 }
