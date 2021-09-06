@@ -14,77 +14,112 @@
   <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
   <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#5bbad5">
 
-  <link rel="stylesheet" href="css/style2.css">
+  <link rel="stylesheet" href="css/style.css">
 
 </head>
 
 <body>
   <div class="box">
+    <div style="background-color: #600000;width: 100%; height: 45px;">
+      <div style="padding: 5px;">
+        <div id="state" style="width: 28px;height:28px; background-color :rgba(255,0,0,0.5); border:1px solid; border-radius: 15px;display:inline-block;"></div>
+      </div>
+    </div>
+
     <table>
+
       <tr>
+
         <td>
           <div id="freqs"></div>
         </td>
+
         <td>
+          <div id="menus">
+            <button id="setup_button" class="vscs-btn">
+              <p>Setup</p>
+            </button>
 
-          <button class="vscs-btn">
-            <p>Setup</p>
-          </button>
+            <br />
 
-          <br />
+            <button id="coord_button" class="vscs-btn">
+              <p>Coord</p>
+            </button>
 
-          <button class="vscs-btn">
-            <p>Coord</p>
-          </button>
+            <br />
 
-          <br />
+            <button id="text_button" class="vscs-btn">
+              <p>Text</p>
+            </button>
 
-          <button class="vscs-btn">
-            <p>Text</p>
-          </button>
+            <br />
 
-          <br />
-
-          <button id="group_button" class="vscs-btn">
-            <p>Group</p>
-          </button>
+            <button id="group_button" class="vscs-btn">
+              <p>Group</p>
+            </button>
+          
+          </div>
 
         </td>
         <td>
+          <div id="coord" class="sidebar"></div>
 
+          <div id="setup" class="sidebar">
 
+            <button id="setup_speaker_all" class="vscs-btn">
+              <p>Speaker All</p>
+            </button>
 
+            <button id="setup_speaker_tones" class="vscs-btn">
+              <p>Speaker Tones</p>
+            </button>
+
+            <button id="setup_freq_add" class="vscs-btn">
+              <p>Add Frequency</p>
+            </button>
+  
+            <button id="setup_freq_rem" class="vscs-btn">
+              <p>Remove Frequency</p>
+            </button>
+
+            <button id="setup_atis_monitor" class="vscs-btn">
+              <p>Monitor ATIS</p>
+            </button>
+
+          </div>
+
+          
         </td>
       </tr>
     </table>
 
-    <span class="status">
-      <div id="state">Disconnected</div>
-      <div id="msg"></div>
-    </span>
+    <div id="msg"></div>
 
   </div>
 
   <script src="js/jquery-3.6.0.min.js"></script>
 
   <script type = "text/javascript">
-    function Listen() {
-       
+
+    function Listen() {       
       if ("WebSocket" in window) {
           // Let us open a web socket
-      var url = "ws://" + location.hostname + ":7674/vatsys/vscs";
+        var url = "ws://" + location.hostname + ":7674/vatsys/vscs";
         var ws = new WebSocket(url);
   
         ws.onopen = function() {
           // Web Socket is connected, send data using send()
-          document.getElementById("state").innerHTML = "Connected";
+          document.getElementById("state").style.backgroundColor = "rgba(0,255,0,0.5)"
         };
   
         ws.onmessage = function (evt) { 
           
             var vatSysData = JSON.parse(evt.data);
-            //document.getElementById("msg").innerHTML = vatSysData;
+            document.getElementById("msg").innerHTML = evt.data;
 
+            //
+            // Manage Frequencies
+            //
 
             // Empty the current freqs.
             document.getElementById("freqs").innerHTML = "";  
@@ -95,7 +130,12 @@
   
                 vatSysData.Frequencies.forEach(item => {
 
-                    var msg = item.FriendlyName.substr(0, 8) + "*";;
+                  if (item.FriendlyName.length > 8) {
+                    var msg = item.FriendlyName.substr(0, 8) + "*";
+                  }
+                  else {
+                    var msg = item.FriendlyName
+                  }
 
                     if(item.Receiving == true) {
                         var styleClass = 'vscs-btn freq-receiving'
@@ -113,11 +153,53 @@
                         var styleClass = 'vscs-btn'
                     }
 
-                    var html = '<button class="' + styleClass + '"><p>' + item.Hertz / 1000000 + '</p><p>' + msg + '</p></button>'
+                    var html = '<button class="' + styleClass + '" id="freq-' + item.Name + '"><p>' + item.Name + '</p><p>' + msg + '</p></button>'
                     document.getElementById("freqs").innerHTML += html;
 
                 });
             }
+
+            //
+            // Manage Lines
+            //
+
+            // Empty the current coord lines.
+            document.getElementById("coord").innerHTML = "";  
+
+            if (vatSysData.Lines.length === 0){
+                // Do Nothing
+            } else {
+  
+                vatSysData.Lines.forEach(item => {
+
+                    var msg = item.FullName.substr(0, 8) + "*";;
+
+                    if(item.State == 1) {
+                        var styleClass = 'vscs-btn coord-active'
+                    }
+                    else if(item.Type == 2) {
+                        var styleClass = 'vscs-btn coord-coldline'
+                    }
+                    else if(item.Type == 1) {
+                        var styleClass = 'vscs-btn coord-hotline'
+                    }
+                    else if(item.External == false) {
+                        var styleClass = 'vscs-btn disabled'
+                    }
+                    else {
+                        var styleClass = 'vscs-btn'
+                    }
+
+                    var html = '<button class="' + styleClass + '" id="freq-' + item.Name + ' onClick="coordAction(this.id)"><p>' + item.Name + '</p><p>' + msg + '</p></button>'
+                    document.getElementById("coord").innerHTML += html;
+
+                });
+            }
+
+
+            //
+            // Group Button State
+            //
 
             if(vatSysData.Group == true) {
                 var styleClass = 'vscs-btn solid-active'
@@ -127,11 +209,30 @@
                 document.getElementById("group_button").className = styleClass;
             }
 
-        };
+
+            //
+            // Group button action
+            //
+
+            $("#group_button").click(function(){
+
+              var state = document.getElementById("group_button");
+
+              if(state.classList.contains('solid-active') == true) {
+                ws.send('{"CommandName":"Group","Value":false}');
+              }
+
+              if(state.classList.contains('solid-active') == false) {
+                ws.send('{"CommandName":"Group","Value":true}');
+              }
+
+              });
+
+            };
   
         ws.onclose = function() { 
             // websocket is closed.
-            document.getElementById("state").innerHTML = "Disconnected";
+            document.getElementById("state").style.backgroundColor = "rgba(255,0,0,0.5)"
         };
       } else {
         
@@ -140,9 +241,27 @@
       }
     }
 
+    function hasClass(element, className) {
+        return (' ' + element.className + ' ').indexOf(' ' + className+ ' ') > -1;
+    }
+
+    
     $( document ).ready(function() {
+      $(".sidebar").hide();
       Listen();
+      $("#setup").show();
     });
+
+    $("#coord_button").click(function(){
+      $(".sidebar").hide();
+      $("#coord").show();
+    });
+
+    $("#setup_button").click(function(){
+      $(".sidebar").hide();
+      $("#setup").show();
+    });
+
  </script>
 </body>
 </html>
