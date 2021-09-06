@@ -91,6 +91,7 @@
     <Compile Include="RemoteVSCSPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VatSysWebSocketServer.cs" />
+    <Compile Include="VSCSCommand.cs" />
     <Compile Include="VSCSState.cs" />
     <Compile Include="VSCSWebSocketService.cs" />
   </ItemGroup>

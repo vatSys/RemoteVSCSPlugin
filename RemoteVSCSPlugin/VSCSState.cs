@@ -33,6 +33,8 @@ namespace RemoteVSCSPlugin
     public class Line
     {
         public string Callsign { get; set; }
+        public string Name { get;set; }
+        public string FullName { get; set; }
         public VSCSLineTypes Type { get; set; }
         public VSCSLineStates State { get; set; }
         public bool External { get; set; }
@@ -47,7 +49,9 @@ namespace RemoteVSCSPlugin
 
         public Line(VSCSLine vscsLine)
         {
-            Callsign = vscsLine.ATC.Callsign;
+            Callsign = vscsLine.Name;
+            Name = vscsLine.Sector?.Name;
+            FullName = vscsLine.Sector?.FullName;
             Type = vscsLine.Type;
             State = vscsLine.State;
             External = vscsLine.External;
