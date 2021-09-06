@@ -107,11 +107,93 @@ namespace RemoteVSCSPlugin
 
         private void VatSysWebSocketServer_VSCSCommandReceived(object sender, VSCSCommandReceivedEventArgs e)
         {
-            switch(e.VSCSCommand.Name)
+            switch (e.VSCSCommand.Name)
             {
                 case "Group":
                     Audio.GroupFrequencies = (bool)e.VSCSCommand.Value;
                     break;
+                case "AllToSpeaker":
+                    Audio.VSCSAllToSpeaker = (bool)e.VSCSCommand.Value;
+                    break;
+                case "TonesToSpeaker":
+                    Audio.VSCSTonesToSpeaker = (bool)e.VSCSCommand.Value;
+                    break;
+                case "Call":
+                    {
+                        var line = Audio.VSCSLines.FirstOrDefault(l => l.Name == (string)e.VSCSCommand.Value);
+                        if (line != null)
+                            Audio.Call(line);
+                        break;
+                    }
+                case "Answer":
+                    {
+                        var line = Audio.VSCSLines.FirstOrDefault(l => l.Name == (string)e.VSCSCommand.Value);
+                        if (line != null)
+                            Audio.Answer(line);
+                        break;
+                    }
+                case "HangUp":
+                    {
+                        var line = Audio.VSCSLines.FirstOrDefault(l => l.Name == (string)e.VSCSCommand.Value);
+                        if (line != null)
+                            Audio.HangUp(line);
+                        break;
+                    }
+                case "AddFreq":
+                    Audio.LoadFrequency((string)e.VSCSCommand.Value, false);
+                    break;
+                case "AddFreqGroup":
+                    Audio.LoadFrequency((string)e.VSCSCommand.Value, true);
+                    break;
+                case "RemoveFreq":
+                    {
+                        var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                        if (freq != null)
+                            Audio.RemoveFrequency(freq);
+                        break;
+                    }
+                case "Primary":
+                    {
+                        if (string.IsNullOrEmpty((string)e.VSCSCommand.Value))
+                            Network.PrimaryFrequency = null;
+                        else
+                        {
+                            var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                            if (freq != null)
+                                Network.PrimaryFrequency = freq;
+                        }
+                        break;
+                    }
+                case "Idle":
+                    {
+                        var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                        if (freq != null)
+                        {
+                            freq.Receive = false;
+                            freq.Transmit = false;
+                        }
+                        break;
+                    }
+                case "Receive":
+                    {
+                        var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                        if (freq != null)
+                        {
+                            freq.Receive = true;
+                            freq.Transmit = false;
+                        }
+                        break;
+                    }
+                case "Transmit":
+                    {
+                        var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                        if (freq != null && Network.IsValidATC)
+                        {
+                            freq.Receive = true;
+                            freq.Transmit = true;
+                        }
+                        break;
+                    }
             }
             UpdateState();
         }
