@@ -46,6 +46,28 @@ td {
     grid-auto-flow: column;
 }
 
+@-webkit-keyframes vscs-flash {
+    0%   { background-color: #5b447a; }
+    49% { background-color: #5b447a; }
+    50% { background-color: #fff; }
+    99% { background-color: #fff; }
+    100% { background-color: #5b447a; }
+}
+@-moz-keyframes vscs-flash {
+    0%   { background-color: #5b447a; }
+    49% { background-color: #5b447a; }
+    50% { background-color: #fff; }
+    99% { background-color: #fff; }
+    100% { background-color: #5b447a; }
+}
+@keyframes vscs-flash {
+    0%   { background-color: #5b447a; }
+    49% { background-color: #5b447a; }
+    50% { background-color: #fff; }
+    99% { background-color: #fff; }
+    100% { background-color: #5b447a; }
+}
+
 .vscs-btn {
     font-family: Terminus;
     font-size: 16px;
@@ -95,5 +117,11 @@ td {
 
 .coord-active {
     background-color: #5b447a;
+}
+
+.coord-ringing {
+    -webkit-animation: vscs-flash 1s infinite;
+    -moz-animation:    vscs-flash 1s infinite;
+    animation:         vscs-flash 1s infinite;
 }
 
