@@ -1,292 +1,127 @@
-<!doctype html>
+@font-face {
+  font-family: Terminus;
+  src: url(../fonts/Terminus-Bold.ttf);
+}
+
+body {
+  background-color: #8c9697;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Terminus;
+}
+.box {
+  width: 100%;
+}
+
+tr {
+  vertical-align: top;
+}
+
+td {
+  border-left-style: solid;
+  border-left-color: #600000;
+  border-left-width:3px;
+}
+
+#freqs {
+  display: grid;
+  grid-template-rows: repeat(5, 1fr);
+  grid-auto-flow: column;
+
+}
+
+#menus {
+  width: 105px;
+
+}
+
+#setup {
+  width: 315px;
+}
+
+#coord {
+  display: grid;
+  grid-template-rows: repeat(5, 1fr);
+  grid-auto-flow: column;
+}
+
+@-webkit-keyframes vscs-flash {
+  0%   { background-color: #5b447a; }
+  49% { background-color: #5b447a; }
+  50% { background-color: #fff; }
+  99% { background-color: #fff; }
+  100% { background-color: #5b447a; }
+}
+@-moz-keyframes vscs-flash {
+  0%   { background-color: #5b447a; }
+  49% { background-color: #5b447a; }
+  50% { background-color: #fff; }
+  99% { background-color: #fff; }
+  100% { background-color: #5b447a; }
+}
+@keyframes vscs-flash {
+  0%   { background-color: #5b447a; }
+  49% { background-color: #5b447a; }
+  50% { background-color: #fff; }
+  99% { background-color: #fff; }
+  100% { background-color: #5b447a; }
+}
+
+.vscs-btn {
+  font-family: Terminus;
+  font-size: 16px;
+  background-color: #a0a0a0;
+  box-shadow: inset 0 1px 0 0 hsl(0deg 0% 100% / 40%);
+  margin-top: 5px;
+  margin-left:5px;
+  text-align: center;
+  height: 100px;
+  width: 100px;
+}
+
+.vscs-btn:active, .solid-active{
+  border-width: 2px;
+  border-style: solid;
+  border-top-color: black;
+  border-top-width:2px;
+  border-left-color: black;
+  border-left-width:2px;
+  border-bottom-color: grey;
+  border-bottom-width:2px;
+  border-right-color: grey;
+  border-right-width:2px;
+  box-shadow: inset 0px 0px 5px #c1c1c1;
+  outline: none;
+}
+
+.freq-primary-transmit {
+  background-color: #01eb00;
+}
+
+.freq-receiving {
+  background-color: #fff;
+}
 
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+.freq-receive {
+  background-color: #ffcbda;
+}
 
-  <title>VSCS | vatSys</title>
-  <meta name="description" content="A simple HTML5 Template for new projects.">
-  <meta name="author" content="SitePoint">
+.coord-hotline {
+  background-color: #ebeb00;
+}
 
-  <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
-  <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#5bbad5">
+.coord-coldline {
+  background-color: #00ebeb;
+}
 
-  <link rel="stylesheet" href="css/style.css">
-
-</head>
-
-<body>
-  <div class="box">
-    <div style="background-color: #600000;width: 100%; height: 45px;">
-      <div style="padding: 5px;">
-        <div id="state" style="width: 28px;height:28px; background-color :rgba(255,0,0,0.5); border:1px solid; border-radius: 15px;display:inline-block;"></div>
-      </div>
-    </div>
-
-    <table>
-
-      <tr>
-
-        <td>
-          <div id="freqs"></div>
-        </td>
+.coord-active {
+  background-color: #5b447a;
+}
 
-        <td>
-          <div id="menus">
-            <button id="setup_button" class="vscs-btn">
-              <p>Setup</p>
-            </button>
-
-            <br />
-
-            <button id="coord_button" class="vscs-btn">
-              <p>Coord</p>
-            </button>
-
-            <br />
-
-            <button id="text_button" class="vscs-btn">
-              <p>Text</p>
-            </button>
-
-            <br />
-
-            <button id="group_button" class="vscs-btn">
-              <p>Group</p>
-            </button>
-          
-          </div>
-
-        </td>
-        <td>
-          <div id="coord" class="sidebar"></div>
-
-          <div id="setup" class="sidebar">
-
-            <button id="setup_speaker_all" class="vscs-btn">
-              <p>Speaker All</p>
-            </button>
-
-            <button id="setup_speaker_tones" class="vscs-btn">
-              <p>Speaker Tones</p>
-            </button>
-
-            <!--
-            <button id="setup_freq_add" class="vscs-btn">
-              <p>Add Frequency</p>
-            </button>
-  
-            <button id="setup_freq_rem" class="vscs-btn">
-              <p>Remove Frequency</p>
-            </button>
-            -->
-
-            <button id="setup_atis_monitor" class="vscs-btn">
-              <p>Monitor ATIS</p>
-            </button>
-
-          </div>
-
-          
-        </td>
-      </tr>
-    </table>
-
-    <div id="msg"></div>
-
-  </div>
-
-  <script src="js/jquery-3.6.0.min.js"></script>
-
-  <script type = "text/javascript">
-
-    function Listen() {       
-      if ("WebSocket" in window) {
-          // Let us open a web socket
-        var url = "ws://" + location.hostname + ":7674/vatsys/vscs";
-        var ws = new WebSocket(url);
-  
-        ws.onopen = function() {
-          // Web Socket is connected, send data using send()
-          document.getElementById("state").style.backgroundColor = "rgba(0,255,0,0.5)"
-        };
-  
-        ws.onmessage = function (evt) { 
-          
-          var vatSysData = JSON.parse(evt.data);
-          document.getElementById("msg").innerHTML = evt.data;
-
-          //
-          // Manage Frequencies
-          //
-
-          // Empty the current freqs.
-          document.getElementById("freqs").innerHTML = "";  
-
-          if (vatSysData.Frequencies.length === 0){
-              // Do Nothing
-          } else {
-
-              vatSysData.Frequencies.forEach(item => {
-
-                if (item.FriendlyName.length > 8) {
-                  var msg = item.FriendlyName.substr(0, 8) + "*";
-                }
-                else {
-                  var msg = item.FriendlyName
-                }
-
-                  if(item.Receiving == true) {
-                      var styleClass = 'vscs-btn freq-receiving'
-                  }
-                  else if(item.Primary || item.Transmit) {
-                      var styleClass = 'vscs-btn freq-primary-transmit'
-                      if(vatSysData.Transmitting){
-                      var msg = '++PTT++  '
-                      }
-                  }
-                  else if(item.Receive == true) {
-                      var styleClass = 'vscs-btn freq-receive'
-                  }
-                  else {
-                      var styleClass = 'vscs-btn'
-                  }
-
-                  var html = '<button class="' + styleClass + '" id="freq-' + item.Name + '"><p>' + item.Name + '</p><p>' + msg + '</p></button>'
-                  document.getElementById("freqs").innerHTML += html;
-
-              });
-          }
-
-          //
-          // Manage Lines
-          //
-
-          // Empty the current coord lines.
-          document.getElementById("coord").innerHTML = "";  
-
-          if (vatSysData.Lines.length === 0){
-              // Do Nothing
-          } else {
-
-              vatSysData.Lines.forEach(item => {
-
-                  var msg = item.FullName.substr(0, 8) + "*";
-
-                  if(item.State == 1) {
-                      var styleClass = 'vscs-btn coord-active'
-                  }
-                  else if(item.Type == 2) {
-                      var styleClass = 'vscs-btn coord-coldline'
-                  }
-                  else if(item.Type == 1) {
-                      var styleClass = 'vscs-btn coord-hotline'
-                  }
-                  else if(item.External == false) {
-                      var styleClass = 'vscs-btn disabled'
-                  }
-                  else {
-                      var styleClass = 'vscs-btn'
-                  }
-
-                  var html = '<button class="' + styleClass + '" id="coord-' + item.Name + '><p>' + item.Name + '</p><p>' + msg + '</p></button>'
-                  document.getElementById("coord").innerHTML += html;
-
-              });
-          }
-
-          //
-          // Group Button State
-          //
-
-          if(vatSysData.Group == true) {
-              var styleClass = 'vscs-btn solid-active'
-              document.getElementById("group_button").className = styleClass;
-          } else {
-              var styleClass = 'vscs-btn'
-              document.getElementById("group_button").className = styleClass;
-          }
-
-
-          //
-          // VSCS Button action
-          //
-
-          $("vscs-btn").click(function(){
-
-            var coordName = this.id.replace('coord-','');
-
-            var state = document.getElementById("group_button");
-
-            if(state.classList.contains('coord-active') == true) {
-              ws.send('{"CommandName":"HangUp","Value":'+coordName+'}');
-            }
-
-            if(state.classList.contains('coord-coldline') == true) {
-              ws.send('{"CommandName":"Call","Value":'+coordName+'}');
-            }
-            if(state.classList.contains('coord-hotline') == true) {
-              ws.send('{"CommandName":"Call","Value":'+coordName+'}');
-            }
-
-          });
-
-          //
-          // Group button action
-          //
-
-          $("#group_button").click(function(){
-
-            var state = document.getElementById("group_button");
-
-            if(state.classList.contains('solid-active') == true) {
-              ws.send('{"CommandName":"Group","Value":false}');
-            }
-
-            if(state.classList.contains('solid-active') == false) {
-              ws.send('{"CommandName":"Group","Value":true}');
-            }
-
-          });
-
-        };
-  
-        ws.onclose = function() { 
-            // websocket is closed.
-            document.getElementById("state").style.backgroundColor = "rgba(255,0,0,0.5)"
-        };
-
-      } else {
-        
-        // The browser doesn't support WebSocket
-        alert("WebSockets NOT supported by your Browser!");
-      }
-    }
-
-    function hasClass(element, className) {
-        return (' ' + element.className + ' ').indexOf(' ' + className+ ' ') > -1;
-    }
-
-    
-    $( document ).ready(function() {
-      $(".sidebar").hide();
-      Listen();
-      $("#setup").show();
-    });
-
-    $("#coord_button").click(function(){
-      $(".sidebar").hide();
-      $("#coord").show();
-    });
-
-    $("#setup_button").click(function(){
-      $(".sidebar").hide();
-      $("#setup").show();
-    });
-
- </script>
-</body>
-</html>
+.coord-ringing {
+  -webkit-animation: vscs-flash 1s infinite;
+  -moz-animation:    vscs-flash 1s infinite;
+  animation:         vscs-flash 1s infinite;
+}
+
