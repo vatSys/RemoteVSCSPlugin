@@ -74,6 +74,7 @@
               <p>Speaker Tones</p>
             </button>
 
+            <!--
             <button id="setup_freq_add" class="vscs-btn">
               <p>Add Frequency</p>
             </button>
@@ -81,6 +82,7 @@
             <button id="setup_freq_rem" class="vscs-btn">
               <p>Remove Frequency</p>
             </button>
+            -->
 
             <button id="setup_atis_monitor" class="vscs-btn">
               <p>Monitor ATIS</p>
@@ -114,126 +116,149 @@
   
         ws.onmessage = function (evt) { 
           
-            var vatSysData = JSON.parse(evt.data);
-            document.getElementById("msg").innerHTML = evt.data;
+          var vatSysData = JSON.parse(evt.data);
+          document.getElementById("msg").innerHTML = evt.data;
 
-            //
-            // Manage Frequencies
-            //
+          //
+          // Manage Frequencies
+          //
 
-            // Empty the current freqs.
-            document.getElementById("freqs").innerHTML = "";  
+          // Empty the current freqs.
+          document.getElementById("freqs").innerHTML = "";  
 
-            if (vatSysData.Frequencies.length === 0){
-                // Do Nothing
-            } else {
-  
-                vatSysData.Frequencies.forEach(item => {
+          if (vatSysData.Frequencies.length === 0){
+              // Do Nothing
+          } else {
 
-                  if (item.FriendlyName.length > 8) {
-                    var msg = item.FriendlyName.substr(0, 8) + "*";
+              vatSysData.Frequencies.forEach(item => {
+
+                if (item.FriendlyName.length > 8) {
+                  var msg = item.FriendlyName.substr(0, 8) + "*";
+                }
+                else {
+                  var msg = item.FriendlyName
+                }
+
+                  if(item.Receiving == true) {
+                      var styleClass = 'vscs-btn freq-receiving'
+                  }
+                  else if(item.Primary || item.Transmit) {
+                      var styleClass = 'vscs-btn freq-primary-transmit'
+                      if(vatSysData.Transmitting){
+                      var msg = '++PTT++  '
+                      }
+                  }
+                  else if(item.Receive == true) {
+                      var styleClass = 'vscs-btn freq-receive'
                   }
                   else {
-                    var msg = item.FriendlyName
+                      var styleClass = 'vscs-btn'
                   }
 
-                    if(item.Receiving == true) {
-                        var styleClass = 'vscs-btn freq-receiving'
-                    }
-                    else if(item.Primary || item.Transmit) {
-                        var styleClass = 'vscs-btn freq-primary-transmit'
-                        if(vatSysData.Transmitting){
-                        var msg = '++PTT++  '
-                        }
-                    }
-                    else if(item.Receive == true) {
-                        var styleClass = 'vscs-btn freq-receive'
-                    }
-                    else {
-                        var styleClass = 'vscs-btn'
-                    }
-
-                    var html = '<button class="' + styleClass + '" id="freq-' + item.Name + '"><p>' + item.Name + '</p><p>' + msg + '</p></button>'
-                    document.getElementById("freqs").innerHTML += html;
-
-                });
-            }
-
-            //
-            // Manage Lines
-            //
-
-            // Empty the current coord lines.
-            document.getElementById("coord").innerHTML = "";  
-
-            if (vatSysData.Lines.length === 0){
-                // Do Nothing
-            } else {
-  
-                vatSysData.Lines.forEach(item => {
-
-                    var msg = item.FullName.substr(0, 8) + "*";;
-
-                    if(item.State == 1) {
-                        var styleClass = 'vscs-btn coord-active'
-                    }
-                    else if(item.Type == 2) {
-                        var styleClass = 'vscs-btn coord-coldline'
-                    }
-                    else if(item.Type == 1) {
-                        var styleClass = 'vscs-btn coord-hotline'
-                    }
-                    else if(item.External == false) {
-                        var styleClass = 'vscs-btn disabled'
-                    }
-                    else {
-                        var styleClass = 'vscs-btn'
-                    }
-
-                    var html = '<button class="' + styleClass + '" id="freq-' + item.Name + ' onClick="coordAction(this.id)"><p>' + item.Name + '</p><p>' + msg + '</p></button>'
-                    document.getElementById("coord").innerHTML += html;
-
-                });
-            }
-
-
-            //
-            // Group Button State
-            //
-
-            if(vatSysData.Group == true) {
-                var styleClass = 'vscs-btn solid-active'
-                document.getElementById("group_button").className = styleClass;
-            } else {
-                var styleClass = 'vscs-btn'
-                document.getElementById("group_button").className = styleClass;
-            }
-
-
-            //
-            // Group button action
-            //
-
-            $("#group_button").click(function(){
-
-              var state = document.getElementById("group_button");
-
-              if(state.classList.contains('solid-active') == true) {
-                ws.send('{"CommandName":"Group","Value":false}');
-              }
-
-              if(state.classList.contains('solid-active') == false) {
-                ws.send('{"CommandName":"Group","Value":true}');
-              }
+                  var html = '<button class="' + styleClass + '" id="freq-' + item.Name + '"><p>' + item.Name + '</p><p>' + msg + '</p></button>'
+                  document.getElementById("freqs").innerHTML += html;
 
               });
+          }
 
-            };
+          //
+          // Manage Lines
+          //
+
+          // Empty the current coord lines.
+          document.getElementById("coord").innerHTML = "";  
+
+          if (vatSysData.Lines.length === 0){
+              // Do Nothing
+          } else {
+
+              vatSysData.Lines.forEach(item => {
+
+                  var msg = item.FullName.substr(0, 8) + "*";
+
+                  if(item.State == 1) {
+                      var styleClass = 'vscs-btn coord-active'
+                  }
+                  else if(item.Type == 2) {
+                      var styleClass = 'vscs-btn coord-coldline'
+                  }
+                  else if(item.Type == 1) {
+                      var styleClass = 'vscs-btn coord-hotline'
+                  }
+                  else if(item.External == false) {
+                      var styleClass = 'vscs-btn disabled'
+                  }
+                  else {
+                      var styleClass = 'vscs-btn'
+                  }
+
+                  var html = '<button class="' + styleClass + '" id="coord-' + item.Name + '><p>' + item.Name + '</p><p>' + msg + '</p></button>'
+                  document.getElementById("coord").innerHTML += html;
+
+              });
+          }
+
+          //
+          // Group Button State
+          //
+
+          if(vatSysData.Group == true) {
+              var styleClass = 'vscs-btn solid-active'
+              document.getElementById("group_button").className = styleClass;
+          } else {
+              var styleClass = 'vscs-btn'
+              document.getElementById("group_button").className = styleClass;
+          }
+
+
+          //
+          // VSCS Button action
+          //
+
+          $("vscs-btn").click(function(){
+
+            var coordName = this.id.replace('coord-','');
+
+            var state = document.getElementById("group_button");
+
+            if(state.classList.contains('coord-active') == true) {
+              ws.send('{"CommandName":"HangUp","Value":'+coordName+'}');
+            }
+
+            if(state.classList.contains('coord-coldline') == true) {
+              ws.send('{"CommandName":"Call","Value":'+coordName+'}');
+            }
+            if(state.classList.contains('coord-hotline') == true) {
+              ws.send('{"CommandName":"Call","Value":'+coordName+'}');
+            }
+
+          });
+
+          //
+          // Group button action
+          //
+
+          $("#group_button").click(function(){
+
+            var state = document.getElementById("group_button");
+
+            if(state.classList.contains('solid-active') == true) {
+              ws.send('{"CommandName":"Group","Value":false}');
+            }
+
+            if(state.classList.contains('solid-active') == false) {
+              ws.send('{"CommandName":"Group","Value":true}');
+            }
+
+          });
+
+        };
   
         ws.onclose = function() { 
             // websocket is closed.
             document.getElementById("state").style.backgroundColor = "rgba(255,0,0,0.5)"
         };
+
       } else {
         
         // The browser doesn't support WebSocket
