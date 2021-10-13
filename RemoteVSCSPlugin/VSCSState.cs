@@ -32,6 +32,7 @@ namespace RemoteVSCSPlugin
 
     public class Line
     {
+        public int Id { get; set; }
         public string Callsign { get; set; }
         public string Name { get;set; }
         public string FullName { get; set; }
@@ -49,6 +50,7 @@ namespace RemoteVSCSPlugin
 
         public Line(VSCSLine vscsLine)
         {
+            Id = vscsLine.Name.GetHashCode() + vscsLine.Type.GetHashCode();
             Callsign = vscsLine.Name;
             Name = vscsLine.Sector?.Name;
             FullName = vscsLine.Sector?.FullName;
@@ -61,6 +63,7 @@ namespace RemoteVSCSPlugin
 
     public class Frequency
     {
+        public int Id { get; set;  }
         public string Name { get; set; }
         public string FriendlyName { get; set; }
         public uint Hertz { get; set; }
@@ -78,6 +81,7 @@ namespace RemoteVSCSPlugin
 
         public Frequency(VSCSFrequency vscsFreq)
         {
+            Id = vscsFreq.Name.GetHashCode() + vscsFreq.GetFSDFrequency();
             Name = vscsFreq.Name;
             FriendlyName = vscsFreq.FriendlyName;
             Hertz = vscsFreq.Frequency;

@@ -26,6 +26,9 @@ namespace RemoteVSCSPlugin
 
         private VSCSState currentState;
 
+        private List<Line> vscsLines;
+        private List<Frequency> vscsFreqs;
+
         public string Name => nameof(RemoteVSCSPlugin);
 
         public string Folder;
@@ -34,11 +37,13 @@ namespace RemoteVSCSPlugin
         {
             Folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\";
 
-            Audio.VSCSFrequenciesChanged += Audio_ChangedEvent;
-            Audio.VSCSLinesChanged += Audio_ChangedEvent;
-            Audio.FrequencyErrorStateChanged += Audio_ChangedEvent;
+            Audio.VSCSFrequenciesChanged += Freqs_Changed;
+            Audio.VSCSLinesChanged += Audio_VSCSLinesChanged;
+            Audio.FrequencyErrorStateChanged += Freqs_Changed;
             Audio.TransmittingChanged += Audio_ChangedEvent;
-            Network.PrimaryFrequencyChanged += Audio_ChangedEvent;
+            Network.PrimaryFrequencyChanged += Freqs_Changed;
+            ConvertLines();
+            ConvertFrequencies();
             UpdateState();
 
             cancellationToken = new CancellationTokenSource();
@@ -52,13 +57,26 @@ namespace RemoteVSCSPlugin
             cancellationToken?.Cancel();
         }
 
+        private void Audio_VSCSLinesChanged(object sender, EventArgs e)
+        {
+            UpdateState(updateLines:true);
+        }
+        private void Freqs_Changed(object sender, EventArgs e)
+        {
+            UpdateState(updateFreqs: true);
+        }
         private void Audio_ChangedEvent(object sender, EventArgs e)
         {
             UpdateState();
         }
 
-        private void UpdateState()
+        private void UpdateState(bool updateFreqs = false, bool updateLines = false)
         {
+            if (updateFreqs)
+                ConvertFrequencies();
+            if (updateLines)
+                ConvertLines();
+
             var state = new VSCSState()
             {
                 Connected = Network.IsConnected && Audio.IsAFVConnected,
@@ -66,43 +84,43 @@ namespace RemoteVSCSPlugin
                 Group = Audio.GroupFrequencies,
                 AllToSpeaker = Audio.VSCSAllToSpeaker,
                 TonesToSpeaker = Audio.VSCSTonesToSpeaker,
-                Lines = ConvertLines(Audio.VSCSLines),
-                Frequencies = ConvertFrequencies(Audio.VSCSFrequencies)
+                Lines = vscsLines,
+                Frequencies = vscsFreqs
             };
             currentState = state;
 
             vatSysWebSocketServer?.BroadcastToVSCS(currentState.Serialize());
         }
 
-        private List<Line> ConvertLines(IList<VSCSLine> vscsLines)
+        private void ConvertLines()
         {
             List<Line> lines = new List<Line>();
-            foreach (var l in vscsLines)
+            foreach (var l in Audio.VSCSLines)
                 lines.Add(new Line(l));
-            return lines;
+            vscsLines = lines;
         }
 
-        private List<Frequency> ConvertFrequencies(IList<VSCSFrequency> vscsFreqs)
+        private void ConvertFrequencies()
         {
-            if (currentState?.Frequencies != null)
+            if (vscsFreqs != null)
             {
-                foreach (var f in currentState.Frequencies)
+                foreach (var f in vscsFreqs)
                 {
-                    f.VSCSFrequency.ReceiveChanged -= Audio_ChangedEvent;
-                    f.VSCSFrequency.ReceivingChanged -= Audio_ChangedEvent;
-                    f.VSCSFrequency.TransmitChanged -= Audio_ChangedEvent;
+                    f.VSCSFrequency.ReceiveChanged -= Freqs_Changed;
+                    f.VSCSFrequency.ReceivingChanged -= Freqs_Changed;
+                    f.VSCSFrequency.TransmitChanged -= Freqs_Changed;
                 }
             }
 
             List<Frequency> freqs = new List<Frequency>();
-            foreach (var f in vscsFreqs)
+            foreach (var f in Audio.VSCSFrequencies)
             {
-                f.ReceiveChanged += Audio_ChangedEvent;
-                f.TransmitChanged += Audio_ChangedEvent;
-                f.ReceivingChanged += Audio_ChangedEvent;
+                f.ReceiveChanged += Freqs_Changed;
+                f.TransmitChanged += Freqs_Changed;
+                f.ReceivingChanged += Freqs_Changed;
                 freqs.Add(new Frequency(f));
             }
-            return freqs;
+            vscsFreqs = freqs;
         }
 
         private void VatSysWebSocketServer_VSCSCommandReceived(object sender, VSCSCommandReceivedEventArgs e)
@@ -120,21 +138,21 @@ namespace RemoteVSCSPlugin
                     break;
                 case "Call":
                     {
-                        var line = Audio.VSCSLines.FirstOrDefault(l => l.Name == (string)e.VSCSCommand.Value);
+                        var line = vscsLines?.FirstOrDefault(l=>l.Id == (int)e.VSCSCommand.Value)?.VSCSLine;
                         if (line != null)
                             Audio.Call(line);
                         break;
                     }
                 case "Answer":
                     {
-                        var line = Audio.VSCSLines.FirstOrDefault(l => l.Name == (string)e.VSCSCommand.Value);
+                        var line = vscsLines?.FirstOrDefault(l => l.Id == (int)e.VSCSCommand.Value)?.VSCSLine;
                         if (line != null)
                             Audio.Answer(line);
                         break;
                     }
                 case "HangUp":
                     {
-                        var line = Audio.VSCSLines.FirstOrDefault(l => l.Name == (string)e.VSCSCommand.Value);
+                        var line = vscsLines?.FirstOrDefault(l => l.Id == (int)e.VSCSCommand.Value)?.VSCSLine;
                         if (line != null)
                             Audio.HangUp(line);
                         break;
@@ -147,18 +165,18 @@ namespace RemoteVSCSPlugin
                     break;
                 case "RemoveFreq":
                     {
-                        var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                        var freq = vscsFreqs?.FirstOrDefault(f => f.Id == (int)e.VSCSCommand.Value)?.VSCSFrequency;
                         if (freq != null)
                             Audio.RemoveFrequency(freq);
                         break;
                     }
                 case "Primary":
                     {
-                        if (string.IsNullOrEmpty((string)e.VSCSCommand.Value))
+                        if (e.VSCSCommand.Value == null)
                             Network.PrimaryFrequency = null;
                         else
                         {
-                            var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                            var freq = vscsFreqs?.FirstOrDefault(f => f.Id == (int)e.VSCSCommand.Value)?.VSCSFrequency;
                             if (freq != null)
                                 Network.PrimaryFrequency = freq;
                         }
@@ -166,7 +184,7 @@ namespace RemoteVSCSPlugin
                     }
                 case "Idle":
                     {
-                        var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                        var freq = vscsFreqs?.FirstOrDefault(f => f.Id == (int)e.VSCSCommand.Value)?.VSCSFrequency;
                         if (freq != null)
                         {
                             freq.Receive = false;
@@ -176,7 +194,7 @@ namespace RemoteVSCSPlugin
                     }
                 case "Receive":
                     {
-                        var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                        var freq = vscsFreqs?.FirstOrDefault(f => f.Id == (int)e.VSCSCommand.Value)?.VSCSFrequency;
                         if (freq != null)
                         {
                             freq.Receive = true;
@@ -186,7 +204,7 @@ namespace RemoteVSCSPlugin
                     }
                 case "Transmit":
                     {
-                        var freq = Audio.VSCSFrequencies.FirstOrDefault(f => f.Name == (string)e.VSCSCommand.Value);
+                        var freq = vscsFreqs?.FirstOrDefault(f => f.Id == (int)e.VSCSCommand.Value)?.VSCSFrequency;
                         if (freq != null && Network.IsValidATC)
                         {
                             freq.Receive = true;
