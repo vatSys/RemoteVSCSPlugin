@@ -1,127 +1,407 @@
-@font-face {
-  font-family: Terminus;
-  src: url(../fonts/Terminus-Bold.ttf);
-}
+<!doctype html>
 
-body {
-  background-color: #8c9697;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: Terminus;
-}
-.box {
-  width: 100%;
-}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-tr {
-  vertical-align: top;
-}
+  <title>VSCS | vatSys</title>
+  <meta name="description" content="A simple HTML5 Template for new projects.">
+  <meta name="author" content="SitePoint">
 
-td {
-  border-left-style: solid;
-  border-left-color: #600000;
-  border-left-width:3px;
-}
+  <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+  <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#5bbad5">
 
-#freqs {
-  display: grid;
-  grid-template-rows: repeat(5, 1fr);
-  grid-auto-flow: column;
+  <link rel="stylesheet" href="css/style.css">
 
-}
+</head>
 
-#menus {
-  width: 105px;
+<body>
+  <div class="box">
+    <div style="background-color: #600000;width: 100%; height: 45px;">
+      <div style="padding: 5px;">
+        <div id="state" style="width: 28px;height:28px; background-color :rgba(255,0,0,0.5); border:1px solid; border-radius: 15px;display:inline-block;"></div>
+      </div>
+    </div>
 
-}
+    <table>
 
-#setup {
-  width: 315px;
-}
+      <tr>
 
-#coord {
-  display: grid;
-  grid-template-rows: repeat(5, 1fr);
-  grid-auto-flow: column;
-}
+        <td>
+          <div id="freqs"></div>
+        </td>
 
-@-webkit-keyframes vscs-flash {
-  0%   { background-color: #5b447a; }
-  49% { background-color: #5b447a; }
-  50% { background-color: #fff; }
-  99% { background-color: #fff; }
-  100% { background-color: #5b447a; }
-}
-@-moz-keyframes vscs-flash {
-  0%   { background-color: #5b447a; }
-  49% { background-color: #5b447a; }
-  50% { background-color: #fff; }
-  99% { background-color: #fff; }
-  100% { background-color: #5b447a; }
-}
-@keyframes vscs-flash {
-  0%   { background-color: #5b447a; }
-  49% { background-color: #5b447a; }
-  50% { background-color: #fff; }
-  99% { background-color: #fff; }
-  100% { background-color: #5b447a; }
-}
+        <td>
+          <div id="menus">
+            <button id="setup_button" class="vscs-btn">
+              <p>Setup</p>
+            </button>
 
-.vscs-btn {
-  font-family: Terminus;
-  font-size: 16px;
-  background-color: #a0a0a0;
-  box-shadow: inset 0 1px 0 0 hsl(0deg 0% 100% / 40%);
-  margin-top: 5px;
-  margin-left:5px;
-  text-align: center;
-  height: 100px;
-  width: 100px;
-}
+            <br />
 
-.vscs-btn:active, .solid-active{
-  border-width: 2px;
-  border-style: solid;
-  border-top-color: black;
-  border-top-width:2px;
-  border-left-color: black;
-  border-left-width:2px;
-  border-bottom-color: grey;
-  border-bottom-width:2px;
-  border-right-color: grey;
-  border-right-width:2px;
-  box-shadow: inset 0px 0px 5px #c1c1c1;
-  outline: none;
-}
+            <button id="coord_button" class="vscs-btn">
+              <p>Coord</p>
+            </button>
 
-.freq-primary-transmit {
-  background-color: #01eb00;
-}
+            <br />
 
-.freq-receiving {
-  background-color: #fff;
-}
+            <!--
+            <button id="text_button" class="vscs-btn">
+              <p>Text</p>
+            </button>
 
-.freq-receive {
-  background-color: #ffcbda;
-}
+            <br />
+            -->
 
-.coord-hotline {
-  background-color: #ebeb00;
-}
+            <button id="group_button" class="vscs-btn">
+              <p>Group</p>
+            </button>
+          
+          </div>
 
-.coord-coldline {
-  background-color: #00ebeb;
-}
+        </td>
+        <td>
+          <div id="freq" class="sidebar"></div>
 
-.coord-active {
-  background-color: #5b447a;
-}
+          <div id="coord" class="sidebar"></div>
 
-.coord-ringing {
-  -webkit-animation: vscs-flash 1s infinite;
-  -moz-animation:    vscs-flash 1s infinite;
-  animation:         vscs-flash 1s infinite;
-}
+          <div id="setup" class="sidebar">
 
+            <button id="setup_speaker_all" class="vscs-btn">
+              <p>Speaker All</p>
+            </button>
+
+            <button id="setup_speaker_tones" class="vscs-btn">
+              <p>Speaker Tones</p>
+            </button>
+
+            <!--
+            <button id="setup_freq_add" class="vscs-btn">
+              <p>Add Frequency</p>
+            </button>
+  
+            <button id="setup_freq_rem" class="vscs-btn">
+              <p>Remove Frequency</p>
+            </button>
+
+            <button id="setup_atis_monitor" class="vscs-btn">
+              <p>Monitor ATIS</p>
+            </button>
+          -->
+
+          </div>
+
+          
+        </td>
+      </tr>
+    </table>
+
+    <div id="msg"></div>
+
+  </div>
+
+  <script src="js/jquery-3.6.0.min.js"></script>
+
+  <script type = "text/javascript">
+
+    function Listen() {       
+      if ("WebSocket" in window) {
+          // Let us open a web socket
+        var url = "ws://" + location.hostname + ":7674/vatsys/vscs";
+        var ws = new WebSocket(url);
+  
+        ws.onopen = function() {
+          // Web Socket is connected, send data using send()
+          document.getElementById("state").style.backgroundColor = "rgba(0,255,0,0.5)"
+        };
+  
+        ws.onmessage = function (evt) { 
+          
+          var vatSysData = JSON.parse(evt.data);
+          document.getElementById("msg").innerHTML = evt.data;
+
+          //
+          // Manage Frequencies
+          //
+
+          // Empty the current freqs.
+          document.getElementById("freqs").innerHTML = "";  
+          document.getElementById("freq").innerHTML = "";  
+
+
+          if (vatSysData.Frequencies.length === 0){
+              // Do Nothing
+          } else {
+
+              vatSysData.Frequencies.forEach(item => {
+
+                if (item.FriendlyName.length > 8) {
+                  var msg = item.FriendlyName.substr(0, 8) + "*";
+                }
+                else {
+                  var msg = item.FriendlyName
+                }
+
+                  if(item.Receiving == true) {
+                      var styleClass = 'vscs-btn freq freq-receiving'
+                  }
+                  else if(item.Primary || item.Transmit) {
+                      var styleClass = 'vscs-btn freq freq-primary-transmit'
+                      if(vatSysData.Transmitting){
+                      var msg = '++PTT++  '
+                      }
+                  }
+                  else if(item.Receive == true) {
+                      var styleClass = 'vscs-btn freq freq-receive'
+                  }
+                  else {
+                      var styleClass = 'vscs-btn freq'
+                  }
+
+                  var num = item.Hertz / 1000000
+                  
+                  var freq_HTML = '<button class="' + styleClass + '" id="freq-' + item.Id + '"><p>' + num.toFixed(Math.max(2, (num.toString().split('.')[1] || []).length)) + '</p><p>' + msg + '</p></button>'
+                  document.getElementById("freqs").innerHTML += freq_HTML;
+
+                  if(item.Transmit == false && item.Receive == false && item.Primary == false) { 
+                    var setupIdle = 'vscs-btn setup-freq solid-active idle'
+                  } else { 
+                    var setupIdle = 'vscs-btn setup-freq idle'
+                  };
+
+                  if(item.Receive == true && item.Transmit == false) { 
+                    var setupReceive = 'vscs-btn setup-freq solid-active receive'
+                  } else { 
+                    var setupReceive = 'vscs-btn setup-freq receive'
+                  };
+
+                  if(item.Transmit == true && item.Receive == true) { 
+                    var setupTransmit = 'vscs-btn setup-freq solid-active transmit'
+                  } else { 
+                    var setupTransmit = 'vscs-btn setup-freq transmit'
+                  };
+
+                  if(item.Primary == true) { 
+                    var setupPrimary = 'vscs-btn setup-freq solid-active primary-active'
+                  } else { 
+                    var setupPrimary = 'vscs-btn setup-freq primary-inactive'
+                  };
+
+                  var freq_setup_HTML = '<div class="sidebar" style="display:none;" id="freq-sidebar-' + item.Id + '">'
+                  freq_setup_HTML += '<button class="'+ setupIdle +'" id="freq-' + item.Id + '"><p>Idle</p></button>'
+                  freq_setup_HTML += '<button class="'+ setupReceive +'" id="freq-' + item.Id + '"><p>Receive</p></button>'
+                  freq_setup_HTML += '<button class="'+ setupTransmit +'" id="freq-' + item.Id + '"><p>Transmit</p></button>'
+                  freq_setup_HTML += '<button class="'+ setupPrimary +'" id="freq-' + item.Id + '"><p>Primary</p></button></div>'
+
+                  document.getElementById("freq").innerHTML += freq_setup_HTML;
+              });
+          }
+
+          //
+          // Freq Button action
+          //
+
+          $(".vscs-btn.freq").click(function(){
+            var name = this.id.replace('freq-','');
+
+            $(".sidebar").hide();
+            $("#freq-sidebar-" + name).show();
+            $("#freq").show();
+
+          });
+
+          //
+          // Freq Button action
+          //
+
+          $(".vscs-btn.setup-freq").click(function(){
+              var id = this.id.replace('freq-','');
+              if(this.classList.contains('primary-active') == true) {
+                ws.send('{"CommandName":"Primary","Value": null}');
+              }
+
+              if(this.classList.contains('primary-inactive') == true) {
+                ws.send('{"CommandName":"Primary","Value":'+id+'}');
+              }
+
+              if(this.classList.contains('transmit') == true) {
+                ws.send('{"CommandName":"Transmit","Value":'+id+'}');
+              }
+
+              if(this.classList.contains('receive') == true) {
+                ws.send('{"CommandName":"Receive","Value":'+id+'}');
+              }
+
+              if(this.classList.contains('idle') == true) {
+                ws.send('{"CommandName":"Idle","Value":'+id+'}');
+              }
+          });
+
+          //
+          // Manage Coord Lines
+          //
+
+          // Empty the current coord lines.
+          document.getElementById("coord").innerHTML = "";  
+
+          if (vatSysData.Lines.length === 0){
+              // Do Nothing
+          } else {
+
+              vatSysData.Lines.sort(function(a, b) {
+                return a.Type - b.Type;
+              });
+
+              vatSysData.Lines.forEach(item => {
+
+                  if(item.FullName === null){
+                    if (item.Callsign.length > 8) {
+                        var msg = item.Callsign.substr(0, 8) + "*";
+                    }
+                    else {
+                      var msg = item.Callsign;
+                    }
+                  }
+                  else {
+                    if (item.FullName.length > 8) {
+                        var msg = item.FullName.substr(0, 8) + "*";
+                    }
+                    else {
+                      var msg = item.FullName;
+                    }
+                  }
+
+                  if(item.State == 1) {
+                      var coordClass = 'vscs-btn coord coord-active'
+                  }
+                  else if(item.State == 3 || item.State == 4) {
+                      var coordClass = 'vscs-btn coord coord-ringing'
+                  }
+                  else if(item.Type == 2) {
+                      var coordClass = 'vscs-btn coord coord-coldline'
+                  }
+                  else if(item.Type == 1) {
+                      var coordClass = 'vscs-btn coord coord-hotline'
+                  }
+                  else if(item.External == false) {
+                      var coordClass = 'vscs-btn coord disabled'
+                  }
+                  else {
+                      var coordClass = 'vscs-btn'
+                  }
+
+                  var coord_HTML = '<button class="' + coordClass + '" id="coord-' + item.Id + '"><p>' + item.Name + '</p><p>' + msg + '</p></button>';
+                  document.getElementById("coord").innerHTML += coord_HTML;
+              });
+          }
+
+          //
+          // Coord Button action
+          //
+
+          $(".vscs-btn.coord").click(function(){
+              var id = this.id.replace('coord-','');
+
+              if(this.classList.contains('coord-active') == true) {
+                ws.send('{"CommandName":"HangUp","Value":"'+id+'"}');
+              }
+              if(this.classList.contains('coord-coldline') == true || this.classList.contains('coord-hotline') == true) {
+                ws.send('{"CommandName":"Call","Value":'+id+'}');
+              }
+
+              if(this.classList.contains('coord-ringing') == true) {
+                ws.send('{"CommandName":"Answer","Value":'+id+'}');
+              }
+          });
+
+          //
+          // Initialise Button States
+          //
+          if(vatSysData.Group == true) {
+              var styleClass = 'vscs-btn solid-active'
+              document.getElementById("group_button").className = styleClass;
+          } else {
+              var styleClass = 'vscs-btn'
+              document.getElementById("group_button").className = styleClass;
+          }
+          if(vatSysData.AllToSpeaker == true) {
+              var styleClass = 'vscs-btn solid-active'
+              document.getElementById("setup_speaker_all").className = styleClass;
+          } else {
+              var styleClass = 'vscs-btn'
+              document.getElementById("setup_speaker_all").className = styleClass;
+          }
+          if(vatSysData.TonesToSpeaker == true) {
+              var styleClass = 'vscs-btn solid-active'
+              document.getElementById("setup_speaker_tones").className = styleClass;
+          } else {
+              var styleClass = 'vscs-btn'
+              document.getElementById("setup_speaker_tones").className = styleClass;
+          }
+
+          //
+          // Button Actions
+          //
+          $("#group_button").click(function(){
+            if(this.classList.contains('solid-active') == true) {
+              ws.send('{"CommandName":"Group","Value":false}');
+            }
+            if(this.classList.contains('solid-active') == false) {
+              ws.send('{"CommandName":"Group","Value":true}');
+            }
+          });
+
+          $("#setup_speaker_all").click(function(){
+            if(this.classList.contains('solid-active') == true) {
+              ws.send('{"CommandName":"AllToSpeaker","Value":false}');
+            }
+            if(this.classList.contains('solid-active') == false) {
+              ws.send('{"CommandName":"AllToSpeaker","Value":true}');
+            }
+          });
+
+          $("#setup_speaker_tones").click(function(){
+            if(this.classList.contains('solid-active') == true) {
+              ws.send('{"CommandName":"TonesToSpeaker","Value":false}');
+            }
+            if(this.classList.contains('solid-active') == false) {
+              ws.send('{"CommandName":"TonesToSpeaker","Value":true}');
+            }
+          });
+
+        };
+  
+        ws.onclose = function() { 
+            // websocket is closed.
+            document.getElementById("state").style.backgroundColor = "rgba(255,0,0,0.5)"
+        };
+
+      } else {
+        
+        // The browser doesn't support WebSocket
+        alert("WebSockets NOT supported by your Browser!");
+      }
+    }
+        
+    $( document ).ready(function() {
+      $(".sidebar").hide();
+      Listen();
+      $("#setup").show();
+    });
+
+    $("#coord_button").click(function(){
+      $(".sidebar").hide();
+      $("#coord").show();
+    });
+
+    $("#setup_button").click(function(){
+      $(".sidebar").hide();
+      $("#setup").show();
+    });
+
+ </script>
+</body>
+</html>
