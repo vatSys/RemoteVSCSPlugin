@@ -30,5 +30,5 @@ If there are any issues, please submit an issue here on Github.
 
 ## Version History
 
-* 0.1
+* v0.1-beta
     * Initial Release
