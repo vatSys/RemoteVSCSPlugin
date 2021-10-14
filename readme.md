@@ -28,13 +28,6 @@ This plugin allows a user to access VSCS functions via a web browser, enable VSC
 
 If there are any issues, please submit an issue here on Github.
 
-## Authors
-
-Contributors names and contact info
-
-* @zachbf
-* @sawbe
-
 ## Version History
 
 * 0.1
