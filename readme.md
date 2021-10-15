@@ -15,7 +15,7 @@ This plugin allows a user to access VSCS functions via a web browser, enable VSC
 
 ### Installing
 
-* Unzip the files into `<ProfileName>/Plugins` folder.
+* Unzip the files into `<ProfileName>/Plugins` folder. You may need to manually create this folder.
 * ON SOME COMPUTERS, THE ZIP FILE WILL BE BLOCKED WHEN DOWNLOADED.
 * 8 TO UNBLOCK, RIGHT CLICK ON THE FILE, CLICK PROPERTIES, TICK UNBLOCK, CLICK APPLY, CLICK OKAY.
 
