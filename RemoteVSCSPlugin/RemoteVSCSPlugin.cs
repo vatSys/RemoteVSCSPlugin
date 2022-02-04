@@ -181,14 +181,7 @@ namespace RemoteVSCSPlugin
                     }
                 case "Primary":
                     {
-                        if (e.VSCSCommand.Value == null)
-                            Network.PrimaryFrequency = VSCSFrequency.None;
-                        else
-                        {
-                            var freq = vscsFreqs?.FirstOrDefault(f => f.Id == Convert.ToInt32(e.VSCSCommand.Value))?.VSCSFrequency;
-                            if (freq != null)
-                                Network.PrimaryFrequency = freq;
-                        }
+                        //Primary is obsolete
                         break;
                     }
                 case "Idle":

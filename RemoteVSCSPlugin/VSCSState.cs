@@ -72,7 +72,6 @@ namespace RemoteVSCSPlugin
         public bool Receive { get; set; }
         public bool Receiving { get; set; }
         public bool Transmit { get; set; }
-        public bool Primary { get; set; }
 
         [JsonIgnore]
         public VSCSFrequency VSCSFrequency { get; set; }
@@ -90,7 +89,6 @@ namespace RemoteVSCSPlugin
             Receive = vscsFreq.Receive;
             Receiving = vscsFreq.Receiving;
             Transmit = vscsFreq.Transmit;
-            Primary = Network.PrimaryFrequency == vscsFreq;
             VSCSFrequency = vscsFreq;
         }
     }
