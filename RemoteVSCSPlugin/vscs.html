@@ -144,36 +144,36 @@
                                 var msg = item.FriendlyName.substr(0, 8) + "*";
                             }
                             else {
-                                var msg = item.FriendlyName
+                                var msg = item.FriendlyName;
                             }
 
                             if (item.Receiving == true) {
-                                var styleClass = 'vscs-btn freq freq-receiving'
+                                var styleClass = 'vscs-btn freq freq-receiving';
                             }
                             else if (item.Transmit) {
-                                var styleClass = 'vscs-btn freq freq-primary-transmit'
+                                var styleClass = 'vscs-btn freq freq-primary-transmit';
                                 if (vatSysData.Transmitting) {
-                                    var msg = '++PTT++  '
+                                    var msg = '++PTT++  ';
                                 }
                             }
                             else if (item.Receive == true) {
-                                var styleClass = 'vscs-btn freq freq-receive'
+                                var styleClass = 'vscs-btn freq freq-receive';
                             }
                             else {
-                                var styleClass = 'vscs-btn freq'
+                                var styleClass = 'vscs-btn freq';
                             }
 
-                            var num = item.Hertz / 1000000
-                            var freq = num.toFixed(Math.max(2, (num.toString().split('.')[1] || []).length))
+                            var num = item.Hertz / 1000000;
+                            var freq = num.toFixed(Math.max(2, (num.toString().split('.')[1] || []).length));
 
-                            if (item.Primary == true) {
-                                var freqFormatted = '<p><u>' + freq + '</u></p>'
-                            } else {
-                                var freqFormatted = '<p>' + freq + '</p>'
-                            }
+                            //if (item.Primary == true) {
+                            //    var freqFormatted = '<p><u>' + freq + '</u></p>'
+                            //} else {
+                            var freqFormatted = '<p>' + freq + '</p>';
+                            //}
 
 
-                            var freq_HTML = '<button class="' + styleClass + '" id="freq-' + item.Id + '">' + freqFormatted + '<p>' + msg + '</p></button>'
+                            var freq_HTML = '<button class="' + styleClass + '" id="freq-' + item.Id + '">' + freqFormatted + '<p>' + msg + '</p></button>';
                             document.getElementById("freqs").innerHTML += freq_HTML;
 
                             // Freq Setup
@@ -196,18 +196,17 @@
                                 var setupTransmit = 'vscs-btn setup-freq transmit'
                             };
 
-                            if (item.Primary == true) {
-                                var setupPrimary = 'vscs-btn setup-freq solid-active primary-active'
-                            } else {
-                                var setupPrimary = 'vscs-btn setup-freq primary-inactive'
-                            };
+                            //if (item.Primary == true) {
+                            //    var setupPrimary = 'vscs-btn setup-freq solid-active primary-active'
+                            //} else {
+                            //    var setupPrimary = 'vscs-btn setup-freq primary-inactive'
+                            //};
 
                             var freq_setup_HTML = '<div class="sidebar" style="display:none;" id="freq-sidebar-' + item.Id + '">'
                             freq_setup_HTML += '<p style="width:100%;text-align:center">' + item.Name + ' (' + item.FriendlyName + ') ' + num.toFixed(Math.max(2, (num.toString().split('.')[1] || []).length)) + '</p>'
                             freq_setup_HTML += '<button class="' + setupIdle + '" id="freq-' + item.Id + '"><p>Idle</p></button>'
                             freq_setup_HTML += '<button class="' + setupReceive + '" id="freq-' + item.Id + '"><p>Receive</p></button>'
-                            freq_setup_HTML += '<button class="' + setupTransmit + '" id="freq-' + item.Id + '"><p>Transmit</p></button><br />'
-                            freq_setup_HTML += '<button class="' + setupPrimary + '" id="freq-' + item.Id + '"><p>Primary</p></button></div>'
+                            freq_setup_HTML += '<button class="' + setupTransmit + '" id="freq-' + item.Id + '"><p>Transmit</p></button></div>'
 
                             document.getElementById("freq").innerHTML += freq_setup_HTML;
                         });
@@ -231,13 +230,13 @@
                     $(".vscs-btn.setup-freq").click(function () {
                         var id = this.id.replace('freq-', '');
 
-                        if (this.classList.contains('primary-active') == true) {
-                            ws.send('{"CommandName":"Primary","Value": null}');
-                        }
+                        //if (this.classList.contains('primary-active') == true) {
+                        //    ws.send('{"CommandName":"Primary","Value": null}');
+                        //}
 
-                        if (this.classList.contains('primary-inactive') == true) {
-                            ws.send('{"CommandName":"Primary","Value":' + id + '}');
-                        }
+                        //if (this.classList.contains('primary-inactive') == true) {
+                        //    ws.send('{"CommandName":"Primary","Value":' + id + '}');
+                        //}
 
                         if (this.classList.contains('transmit') == true) {
                             ws.send('{"CommandName":"Transmit","Value":' + id + '}');
